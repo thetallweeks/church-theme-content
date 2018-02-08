@@ -13,6 +13,21 @@
 // No direct access
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+function save_taxonomy_custom_meta( $term_id ) {
+ 	if ( isset( $_POST['term_meta'] ) ) {
+ 		$t_id = $term_id;
+ 		$term_meta = get_option( "taxonomy_$t_id" );
+ 		$cat_keys = array_keys( $_POST['term_meta'] );
+ 		foreach ( $cat_keys as $key ) {
+ 			if ( isset ( $_POST['term_meta'][$key] ) ) {
+ 				$term_meta[$key] = $_POST['term_meta'][$key];
+ 			}
+ 		}
+ 		// Save the option array.
+ 		update_option( "taxonomy_$t_id", $term_meta );
+ 	}
+}
+
 /**********************************
  * SERMON TAXONOMIES
  **********************************/
@@ -116,6 +131,52 @@ add_action( 'init', 'ctc_register_taxonomy_sermon_book' );
  *
  * @since 0.9
  */
+
+function add_new_sermon_series_fields() {
+ 	?>
+ 	<div class="form-field">
+ 		<label for="term_meta[sort_order]"><?php _e( 'Default Sort Order' ); ?></label>
+ 		<select name="term_meta[sort_order]" id="term_meta[sort_order]" value="ASC">
+ 			<option value="ASC">
+ 				Ascending (Oldest First)
+ 			</option>
+ 			<option value="DESC" selected>
+ 				Descending (Most Recent First)
+ 			</option>
+ 		</select>
+ 		<p class="description"><?php _e( 'Choose the default sort order for sermons in this series' ); ?></p>
+ 	</div>
+ <?php
+}
+
+function add_edit_sermon_series_fields($term) {
+ 	// put the term ID into a variable
+ 	$t_id = $term->term_id;
+
+ 	// retrieve the existing value(s) for this meta field. This returns an array
+ 	$term_meta = get_option( "taxonomy_$t_id" ); ?>
+ 	<tr class="form-field">
+ 		<th scope="row" valign="top">
+ 			<label for="term_meta[sort_order]">
+ 				<?php _e( 'Default Sort Order' ); ?>
+ 			</label>
+ 		</th>
+ 		<td>
+ 			<select name="term_meta[sort_order]" id="term_meta[sort_order]" value="<?php echo esc_attr( $term_meta['sort_order'] ) ? esc_attr( $term_meta['sort_order'] ) : ''; ?>">
+ 				<option value="ASC" <?php selected( $term_meta['sort_order'], 'ASC' ); ?>>
+ 					Ascending (Oldest First)
+ 				</option>
+ 				<option value="DESC" <?php selected( $term_meta['sort_order'], 'DESC' ); ?>>
+ 					Descending (Most Recent First)
+ 				</option>
+ 			</select>
+
+ 			<p class="description"><?php _e( 'Choose the default sort order for sermons in this series' ); ?></p>
+ 		</td>
+ 	</tr>
+ <?php
+}
+
 function ctc_register_taxonomy_sermon_series() {
 
 	// Arguments
@@ -142,7 +203,7 @@ function ctc_register_taxonomy_sermon_series() {
 		'rewrite' 		=> array(
 			'slug' 			=> 'sermon-series',
 			'with_front' 	=> false,
-			'hierarchical' 	=> true
+			'hierarchical' 	=> true,
 		)
 	);
 	$args = apply_filters( 'ctc_taxonomy_sermon_series_args', $args ); // allow filtering
@@ -157,6 +218,12 @@ function ctc_register_taxonomy_sermon_series() {
 }
 
 add_action( 'init', 'ctc_register_taxonomy_sermon_series' );
+
+// Additional field for sermon series
+add_action( 'ctc_sermon_series_add_form_fields', 'add_new_sermon_series_fields');
+add_action( 'ctc_sermon_series_edit_form_fields', 'add_edit_sermon_series_fields');
+add_action( 'edited_ctc_sermon_series', 'save_taxonomy_custom_meta', 10, 2 );
+add_action( 'create_ctc_sermon_series', 'save_taxonomy_custom_meta', 10, 2 );
 
 /**
  * Sermon speaker
