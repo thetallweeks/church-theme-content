@@ -59,10 +59,10 @@ function ctc_register_taxonomy_sermon_topic() {
 			'menu_name' 					=> esc_html_x( 'Topics', 'sermon menu name', 'church-theme-content' )
 		),
 		'hierarchical'	=> true, // category-style instead of tag-style
-		'public' 		=> ctc_taxonomy_supported( 'sermons', 'ctc_sermon_topic' ),
+		'public' 		=> true,
 		'rewrite' 		=> array(
 			'slug' 			=> 'sermon-topic',
-			'with_front' 	=> false,
+			'with_front' 	=> true,
 			'hierarchical' 	=> true
 		)
 	);
@@ -74,7 +74,6 @@ function ctc_register_taxonomy_sermon_topic() {
 		'ctc_sermon',
 		$args
 	);
-
 }
 
 add_action( 'init', 'ctc_register_taxonomy_sermon_topic' );
@@ -318,6 +317,53 @@ function ctc_register_taxonomy_sermon_tag() {
 }
 
 add_action( 'init', 'ctc_register_taxonomy_sermon_tag' );
+
+/**
+ * Sermon session
+ *
+ * @since 0.9
+ */
+function ctc_register_taxonomy_sermon_session() {
+
+	// Arguments
+	$args = array(
+		'labels' => array(
+			'name' 							=> esc_html_x( 'Sermon Sessions', 'taxonomy general name', 'church-theme-content' ),
+			'singular_name'					=> esc_html_x( 'Sermon Session', 'taxonomy singular name', 'church-theme-content' ),
+			'search_items' 					=> esc_html_x( 'Search Sessions', 'sermons', 'church-theme-content' ),
+			'popular_items' 				=> esc_html_x( 'Popular Sessions', 'sermons', 'church-theme-content' ),
+			'all_items' 					=> esc_html_x( 'All Sessions', 'sermons', 'church-theme-content' ),
+			'parent_item' 					=> null,
+			'parent_item_colon' 			=> null,
+			'edit_item' 					=> esc_html_x( 'Edit Session', 'sermons', 'church-theme-content' ),
+			'update_item' 					=> esc_html_x( 'Update Session', 'sermons', 'church-theme-content' ),
+			'add_new_item' 					=> esc_html_x( 'Add Session', 'sermons', 'church-theme-content' ),
+			'new_item_name' 				=> esc_html_x( 'New Session', 'sermons', 'church-theme-content' ),
+			'separate_items_with_commas' 	=> esc_html_x( 'Separate sessions with commas', 'sermons', 'church-theme-content' ),
+			'add_or_remove_items' 			=> esc_html_x( 'Add or remove sessions', 'sermons', 'church-theme-content' ),
+			'choose_from_most_used' 		=> esc_html_x( 'Choose from the most used sessions', 'sermons', 'church-theme-content' ),
+			'menu_name' 					=> esc_html_x( 'Sessions', 'sermon menu name', 'church-theme-content' )
+		),
+		'hierarchical'	=> true, // category-style instead of tag-style
+		'public' 		=> ctc_taxonomy_supported( 'sermons', 'ctc_sermon_session' ),
+		'rewrite' 		=> array(
+			'slug' 			=> 'sermon-session',
+			'with_front' 	=> false,
+			'hierarchical' 	=> true
+		)
+	);
+	$args = apply_filters( 'ctc_taxonomy_sermon_session_args', $args ); // allow filtering
+
+	// Registration
+	register_taxonomy(
+		'ctc_sermon_session',
+		'ctc_sermon',
+		$args
+	);
+
+}
+
+add_action( 'init', 'ctc_register_taxonomy_sermon_session' );
 
 /**********************************
  * EVENT TAXONOMIES
